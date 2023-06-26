@@ -25,7 +25,7 @@ namespace RecordEmail.Controllers
 
             // Colhe todos os endereços a serem enviados um email
 
-            List<Email> emails = await _context.Emails.ToListAsync();
+            List<Email> emails = await _context.Emails.Where(e => e.Ativo == true).ToListAsync();
 
             List<string> emailsDestinatarios = new List<string>();
             
@@ -37,27 +37,37 @@ namespace RecordEmail.Controllers
             // Colhe os atos a serem inseridos no email
             // Somente os atos que tiverem sido modificados no dia anterior ao envio.
 
-            List<Ato> atos = await _context.Atos.ToListAsync();
+            List<Ato> atosNovos = await _context.Atos.Where(e => e.DataPublicacao == DateTime.Today.AddDays(-1)).ToListAsync();
 
-            List<string> atosAlterados = new List<string>(); 
+            List<Ato> atosAlterados = await _context.Atos.Where(e => e.DataRepublicacao == DateTime.Today.AddDays(-1)).ToListAsync();
 
-            foreach (var ato in atos)
+            var atos = new List<String>();
+            
+            /* Estudar depois
+            atos.AddRange(atosNovos);
+            atos.AddRange(atosAlterados);
+            Console.WriteLine(atos);
+            */
+            
+            foreach (var ato in atosNovos)
             {
-                if (ato.DataRepublicacao == DateTime.Today.AddDays(-1))
-                {
-                    atosAlterados.Add(ato.Numero); 
-                };
+                atos.Add(ato.Numero); 
+            }
+
+            foreach (var ato in atosAlterados)
+            {
+                atos.Add(ato.Numero);
             }
 
             // Atrela as informações colhidas ao models do newsletter ( aceito sugestões )
 
-            Newsletter newsletter = new Newsletter(DateTime.Now, atosAlterados);
+            Newsletter newsletter = new Newsletter(DateTime.Now, atos);
 
             // Preenche os dados necessários para realizar o envio de email
 
             EmailData emailData = new EmailData(
                 emailsDestinatarios,
-                "Newsletter Teste 2",
+                "Newsletter Validacao",
                 _mail.GetEmailTemplate("newsletter_template", newsletter));
 
             bool sendResult = await _mail.SendEmailAsync(emailData, new CancellationToken());

@@ -4,8 +4,8 @@
     {
         // Define as informações passadas na template do Informativo.
         public DateTime? DiaEnvio { get; set; }
-        public List<string>? Atos { get; set; }
-        public Newsletter(DateTime? diaEnvio = null, List<string>? atos = null) 
+        public List<String>? Atos { get; set; }
+        public Newsletter(DateTime? diaEnvio = null, List<String>? atos = null) 
         {
             DiaEnvio = diaEnvio;
             Atos = atos;
