@@ -75,7 +75,7 @@ namespace RecordEmail.Controllers
         {
             EmailData emailData = new EmailData(
                 new List<string> { verificarEmail.Email },
-                "Email com template teste",
+                "Email Confirmacao",
                 _mail.GetEmailTemplate("verificar_email", verificarEmail));
 
             bool sendResult = await _mail.SendEmailAsync(emailData, new CancellationToken());
